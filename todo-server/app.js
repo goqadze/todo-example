@@ -14,7 +14,11 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(fileUpload());
+
+// fileUpload - content type multipart/form-data -ისთვის, რაც პოსტმენით მოყვებოდა
+app.use(fileUpload()); 
+// ჩვენი კლიენტიდან content-type: application/json-ს ვატნევთ, api/index.js ფაილში ნახავთ 
+
 app.use(cors());
 
 const mongoUrl = 'mongodb://localhost:27017/todosdb';

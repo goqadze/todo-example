@@ -4,6 +4,16 @@ const Todo = require('../models/todo.model');
 
 const router = express.Router();
 
+const todoValidator = [
+  body('title')
+    .exists()
+    .withMessage('does not exist')
+    .notEmpty()
+    .withMessage('not empty error'),
+  body('description').exists().notEmpty(),
+  body('completed').isBoolean(),
+];
+
 router.get(
   '/',
 
@@ -23,18 +33,16 @@ router.get(
       case 'active': filter = { completed: false }; break;
       case 'completed': filter = { completed: true }; break;
     }
-    
+
     const todos = await Todo.find(filter);
     res.json(todos);
   }
-  );
-  
+);
+
 router.post(
   '/store',
 
-  body('title').exists().notEmpty(),
-  body('description').exists().notEmpty(),
-  body('completed').isBoolean(),
+  todoValidator,
 
   async (req, res) => {
     const errors = validationResult(req);
@@ -60,13 +68,7 @@ router.put(
   '/:id/update',
   param('id').isMongoId(),
 
-  body('title')
-    .exists()
-    .withMessage('exists error')
-    .notEmpty()
-    .withMessage('not empty error'),
-  body('description').exists().notEmpty(),
-  body('completed').isBoolean(),
+  todoValidator,
 
   async (req, res) => {
     const errors = validationResult(req);
