@@ -16,8 +16,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // fileUpload - content type multipart/form-data -ისთვის, რაც პოსტმენით მოყვებოდა
-app.use(fileUpload()); 
-// ჩვენი კლიენტიდან content-type: application/json-ს ვატნევთ, api/index.js ფაილში ნახავთ 
+app.use(fileUpload());
+// ჩვენი კლიენტიდან content-type: application/json-ს ვატნევთ, api/index.js ფაილში ნახავთ
 
 app.use(cors());
 
@@ -32,8 +32,8 @@ mongoose
 app.use('/todos', todoRoutes);
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
 
-module.exports = app;
+module.exports = { app, server };

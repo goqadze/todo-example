@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --timeout 5000 --watch --recursive"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +19,10 @@
     "mongoose": "^5.9.12"
   },
   "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "faker": "^4.1.0",
+    "mocha": "^7.1.2",
     "nodemon": "^2.0.3"
   }
 }

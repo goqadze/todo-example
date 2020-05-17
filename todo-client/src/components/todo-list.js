@@ -8,6 +8,7 @@ class TodoApp extends LitElement {
       visibility: 'all',
     }
   }
+  
   static get properties() {
     return {
       list: Array,

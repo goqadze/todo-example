@@ -11,7 +11,7 @@ const todoValidator = [
     .notEmpty()
     .withMessage('not empty error'),
   body('description').exists().notEmpty(),
-  body('completed').isBoolean(),
+  body('completed').exists().isBoolean(),
 ];
 
 router.get(
