@@ -21,7 +21,7 @@ describe('Todos', function () {
   before(function () {
     console.log('before');
     return Todo.deleteMany({}).then(() => {
-      const authors = Array(10)
+      const todos = Array(10)
         .fill()
         .map(() => ({
           title: faker.name.title(),
@@ -29,12 +29,12 @@ describe('Todos', function () {
           completed: faker.random.boolean(),
         }));
 
-      return Todo.create(authors);
+      return Todo.create(todos);
     });
   });
 
   after(function (done) {
-    console.log('after');
+    // console.log('after');
     mongoose.deleteModel(/.+/);
     server.close();
     done();
@@ -73,11 +73,45 @@ describe('Todos', function () {
         });
     });
 
-    // should get todo by ID
+    it('should get todo by ID', () => {
+      return Todo.findOne().then(({ _id }) =>
+        chai
+          .request(app)
+          .get(`/todos/${_id}`)
+          .then((res) => {
+            res.should.have.status(200);
+            res.body.should.have.property('title');
+            res.body.should.have.property('description');
+            res.body.should.have.property('completed');
+          })
+      );
+    });
 
-    // should not find todo by ID after deleting it
+    it('should not find todo by ID after deleting it', function () {
+      return Todo.findOneAndDelete()
+        .then(({ _id }) => chai.request(app).get(`/todos/${_id}`))
+        .then((res) => {
+          res.should.have.status(404);
+          res.body.should.be.a('object');
+          res.body.should.have.property('name').eql('NotFoundError');
+        });
+    });
 
-    // should not get todo with invalid ID
+    it('should not get todo with invalid ID', function () {
+      const invalidId = `id_${faker.random.number()}`;
+      return chai
+        .request(app)
+        .get(`/todos/${invalidId}`)
+        .then((res) => {
+          res.should.have.status(422);
+          res.body.should.be.a('object');
+          res.body.should.have.property('errors');
+          res.body.errors[0].should.have.property('msg');
+          res.body.errors[0].should.have.property('param');
+          res.body.errors[0].should.have.property('value').eql(invalidId);
+        });
+
+    });
   });
 
   describe('POST requests', function () {
@@ -122,17 +156,18 @@ describe('Todos', function () {
   });
 
   describe('PUT requests', function () {
-    it("should update todo", function () {
+    it('should update todo', function () {
       const newTitle = faker.name.title();
       const newDescription = faker.lorem.sentence();
       const newCompleted = faker.random.boolean();
 
       return Todo.findOne()
         .then(({ _id }) =>
-          chai
-            .request(app)
-            .put(`/todos/${_id}/update`)
-            .send({ title: newTitle, description: newDescription, completed: newCompleted })
+          chai.request(app).put(`/todos/${_id}/update`).send({
+            title: newTitle,
+            description: newDescription,
+            completed: newCompleted,
+          })
         )
         .then((res) => {
           res.should.have.status(200);

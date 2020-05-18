@@ -39,6 +39,23 @@ router.get(
   }
 );
 
+router.get('/:id', param('id').isMongoId(), async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+
+  const id = req.params.id;
+  const todo = await Todo.findById(id);
+  if (!todo) {
+    const err = new Error('Todo not found for the given ObjectId');
+    err.name = 'NotFoundError';
+    return res.status(404).json(err);
+  }
+
+  res.json(todo);
+});
+
 router.post(
   '/store',
 
